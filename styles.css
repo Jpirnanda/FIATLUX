@@ -165,6 +165,9 @@ h2 {
 
 #buttons {
   width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
 }
 
 button {
@@ -176,6 +179,13 @@ button {
   color: white;
   width: 150px;
   font-size: large;
+  transition: transform 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.1);
+  background-color: var(--primaria);
+  cursor: pointer;
 }
 
 #actual-color {

@@ -86,12 +86,12 @@
 
       // Exemplo de uso: encher e esvaziar a barra continuamente
       setInterval(() => {
-        currentProgress += 1;
+        currentProgress += 0.1;
         if (currentProgress > 100) {
           currentProgress = 0; // Reinicia a barra
         }
         setProgress(currentProgress);
-      }, 50); // A velocidade da animação (em milissegundos)
+      }, 25); // A velocidade da animação (em milissegundos)
     </script>
   </body>
 </html>
