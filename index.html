@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FiatLux</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="stars.css" />
   </head>
   <body>
+    <section class="wrapper">
+      <div id="stars1"></div>
+      <div id="stars2"></div>
+      <div id="stars3"></div>
+    </section>
     <div id="game-container">
       <div class="side" id="stats">
         <div class="stat">
@@ -36,6 +42,14 @@
               <h2>velocity</h2>
               <div id="speed">1 m/s</div>
             </div>
+
+            <div id="progress-section">
+              <div id="progress-container">
+                <div id="progress-bar"></div>
+              </div>
+              <h2>Travelling in 1D</h2>
+            </div>
+
             <div id="buttons">
               <button>FLY</button>
               <button>EAT</button>
@@ -59,6 +73,25 @@
         </div>
       </div>
     </div>
-    <script src="app.js"></script>
+    <script src="stars.js"></script>
+    <script>
+      const progressBar = document.getElementById("progress-bar");
+      let currentProgress = 0;
+
+      // Função para definir o progresso da barra (aceita valores de 0 a 100)
+      function setProgress(percentage) {
+        const progress = Math.max(0, Math.min(100, percentage));
+        progressBar.style.width = progress + "%";
+      }
+
+      // Exemplo de uso: encher e esvaziar a barra continuamente
+      setInterval(() => {
+        currentProgress += 1;
+        if (currentProgress > 100) {
+          currentProgress = 0; // Reinicia a barra
+        }
+        setProgress(currentProgress);
+      }, 50); // A velocidade da animação (em milissegundos)
+    </script>
   </body>
 </html>
