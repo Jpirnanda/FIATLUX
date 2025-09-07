@@ -88,6 +88,30 @@ h2 {
   padding: 14px;
 }
 
+.buy-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#underline {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 2px solid white;
+  width: 40%;
+  height: 30px;
+  margin-top: 10px;
+}
+
+.lucide-sparkle {
+  width: 15px;
+  margin-bottom: 4px;
+}
+
 /* ==========================================================================
    PAINEL CENTRAL
    ========================================================================== */
