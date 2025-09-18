@@ -17,8 +17,8 @@
     <div id="game-container">
       <div class="side" id="stats">
         <div class="stat">
-          <h2 class="stat-title">flux</h2>
-          <div class="stat-value">1 lumen</div>
+          <h2 class="stat-title">intensity</h2>
+          <div class="stat-value">1 candela</div>
           <div class="buy-button">
             <div id="underline">
               <p>100</p>
@@ -27,8 +27,8 @@
           </div>
         </div>
         <div class="stat">
-          <h2 class="stat-title">intensity</h2>
-          <div class="stat-value">1 candela</div>
+          <h2 class="stat-title">flux</h2>
+          <div class="stat-value">1 lumen</div>
           <div class="buy-button">
             <div id="underline">
               <p>100</p>
@@ -59,7 +59,7 @@
       </div>
       <div class="center">
         <div id="title">
-          <h1>SPARK</h1>
+          <h1 id="lumens-qnt">SPARK</h1>
         </div>
         <div id="display">
           <div id="main-frame">
@@ -76,8 +76,8 @@
             </div>
 
             <div id="buttons">
-              <button>FLY</button>
-              <button>EAT</button>
+              <button id="fly-button">FLY</button>
+              <button id="eat-button">EAT</button>
             </div>
           </div>
         </div>
@@ -101,27 +101,6 @@
       </div>
     </div>
     <script src="stars.js"></script>
-    <script>
-      const progressBar = document.getElementById("progress-bar");
-      let currentProgress = 0;
-
-      // Função para definir o progresso da barra (aceita valores de 0 a 100)
-      function setProgress(percentage) {
-        const progress = Math.max(0, Math.min(100, percentage));
-        progressBar.style.width = progress + "%";
-      }
-
-      // Exemplo de uso: encher e esvaziar a barra continuamente
-      setInterval(() => {
-        currentProgress += 0.1;
-        if (currentProgress > 100) {
-          currentProgress = 0; // Reinicia a barra
-        }
-        setProgress(currentProgress);
-      }, 25); // A velocidade da animação (em milissegundos)
-    </script>
-    <script>
-      lucide.createIcons();
-    </script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>
