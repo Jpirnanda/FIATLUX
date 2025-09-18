@@ -1,1 +1,3 @@
-import "./ui.js";
+import { initializeGame } from "./engine.js";
+
+initializeGame();

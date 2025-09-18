@@ -1,159 +1,88 @@
-import { stats, upgradeStat, zones } from "./game.js";
+import { stats, zones } from "./game.js";
+import { state } from "./state.js";
 
-// Fly or eat logic
-const flyButton = document.getElementById("fly-button");
-const eatButton = document.getElementById("eat-button");
+// --- DOM Elements ---
+const centerDiv = document.querySelector(".center");
 const lumensIndicator = document.getElementById("lumens-qnt");
-
-let gameState = "fly";
-let lumens = 0;
-let eatInterval = null;
-let flyInterval = null;
-let currentZone = "first";
-
-flyButton.addEventListener("click", () => {
-  gameState = "fly";
-  console.log("fly!");
-  startFlying();
-});
-
-eatButton.addEventListener("click", () => {
-  gameState = "eat";
-  console.log("eat!");
-  startEating();
-});
-
-//  Função para começar a comer lumens.
-const exponenciacao = 1.2;
-
-function getLumensPerSecond() {
-  return Math.floor(1 * Math.pow(stats.intensity.level, exponenciacao));
-}
-
-function startEating() {
-  if (eatInterval) {
-    lumens += 1000;
-    lumensIndicator.textContent = lumens + " lumens";
-    return;
-  }
-
-  eatInterval = setInterval(() => {
-    if (gameState === "eat") {
-      lumens += getLumensPerSecond();
-      lumensIndicator.textContent = lumens + " lumens";
-    }
-  }, 1000);
-}
-
-//  Função para voar.
 const progressBar = document.getElementById("progress-bar");
-
-function updateProgressBar() {
-  const zone = zones[currentZone];
-  const percent = Math.min(zone.actual_distance / zone.max_distance, 1) * 100;
-  progressBar.style.width = percent + "%";
-}
-
-function getDistancePerSecond() {
-  return Math.floor(1 * Math.pow(stats.flux.level, exponenciacao));
-}
-
-function startFlying() {
-  if (flyInterval) return;
-
-  flyInterval = setInterval(() => {
-    if (gameState === "fly") {
-      const zone = zones[currentZone];
-      const dist = getDistancePerSecond();
-      zone.actual_distance += dist;
-      updateProgressBar();
-      console.log(zone.actual_distance);
-
-      // Chegou ao fim da zona?
-      if (zone.actual_distance >= zone.max_distance) {
-        clearInterval(flyInterval);
-        flyInterval = null;
-        // Avança para próxima zona, se existir
-        if (currentZone === "first") currentZone = "second";
-        else if (currentZone === "second") currentZone = "third";
-        // Reinicia distância
-        zones[currentZone].actual_distance = 0;
-        updateProgressBar();
-        // Mensagem de avanço de zona, se quiser
-      }
-    }
-  }, 1000);
-}
-
-// Lógica para atualizar UI
-const intensityLevel = document.querySelector(".stat:nth-child(1) .stat-value");
-const intensityCost = document.querySelector(".stat:nth-child(1) #underline p");
-
-const fluxLevel = document.querySelector(".stat:nth-child(2) .stat-value");
-const fluxCost = document.querySelector(".stat:nth-child(2) #underline p");
-
-const illuminanceLevel = document.querySelector(".stat:nth-child(3) .stat-value");
-const illuminanceCost = document.querySelector(".stat:nth-child(3) #underline p");
-
-const radiantLevel = document.querySelector(".stat:nth-child(4) .stat-value");
-const radiantCost = document.querySelector(".stat:nth-child(4) #underline p");
-
+const progressSection = document.getElementById("progress-section");
+const travelText = document.querySelector("#progress-section h2");
 const velocity = document.getElementById("speed");
 
-function updateVelocityUI() {
-  velocity.textContent = getDistancePerSecond() + " m/s";
+// --- Funções de UI ---
+export function updateProgressBar() {
+  const zone = zones[state.currentZone];
+  const progress = (zone.actual_distance / zone.max_distance) * 100;
+  progressBar.style.width = `${progress}%`;
 }
 
-function updateStatsUI() {
-  fluxLevel.textContent = stats.flux.level + " lumen";
-  fluxCost.textContent = stats.flux.cost;
-
-  intensityLevel.textContent = stats.intensity.level + " candela";
-  intensityCost.textContent = stats.intensity.cost;
-
-  illuminanceLevel.textContent = stats.illuminance.level + " lux";
-  illuminanceCost.textContent = stats.illuminance.cost;
-
-  radiantLevel.textContent = stats.radiant.level + " watt";
-  radiantCost.textContent = stats.radiant.cost;
+export function updateLumensUI() {
+  lumensIndicator.textContent = state.lumens + " lumens";
 }
 
-fluxCost.addEventListener("click", () => {
-  const cost = upgradeStat("flux", lumens);
-  if (cost > 0) {
-    lumens -= cost;
-    updateStatsUI();
-    updateVelocityUI();
-    lumensIndicator.textContent = lumens + " lumens";
-  }
-});
+export function updateVelocityUI(speed) {
+  velocity.textContent = speed + " m/s";
+}
 
-intensityCost.addEventListener("click", () => {
-  const cost = upgradeStat("intensity", lumens);
-  if (cost > 0) {
-    lumens -= cost;
-    updateStatsUI();
-    lumensIndicator.textContent = lumens + " lumens";
-  }
-});
+export function updateTravelText() {
+  travelText.textContent = `Travelling in ${zones[state.currentZone].name}`;
+}
 
-illuminanceCost.addEventListener("click", () => {
-  const cost = upgradeStat("illuminance", lumens);
-  if (cost > 0) {
-    lumens -= cost;
-    updateStatsUI();
-    lumensIndicator.textContent = lumens + " lumens";
-  }
-});
+export function showEventScreen(event, onChoiceSelected) {
+  const choicesHTML = event.choices.map((choice, index) => `<button class="choice-button" data-choice-index="${index}">${choice.text}</button>`).join("");
+  centerDiv.innerHTML = `
+    <div id="event-screen">
+      <h2>${event.text}</h2>
+      <div id="event-choices">
+        ${choicesHTML}
+      </div>
+    </div>`;
+  document.querySelectorAll(".choice-button").forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const choiceIndex = parseInt(e.target.dataset.choiceIndex, 10);
+      onChoiceSelected(event.choices[choiceIndex]);
+    });
+  });
+}
 
-radiantCost.addEventListener("click", () => {
-  const cost = upgradeStat("radiant", lumens);
-  if (cost > 0) {
-    lumens -= cost;
-    updateStatsUI();
-    lumensIndicator.textContent = lumens + " lumens";
-  }
-});
+export function restoreMainScreen() {
+  centerDiv.innerHTML = state.originalCenterHTML;
+}
 
-updateStatsUI();
-updateProgressBar();
+export function storeOriginalHTML() {
+  state.originalCenterHTML = centerDiv.innerHTML;
+}
+
+export function updateStatsUI() {
+  document.querySelector(".stat:nth-child(1) .stat-value").textContent = stats.intensity.level + " candela";
+  document.querySelector(".stat:nth-child(1) #underline p").textContent = stats.intensity.cost;
+  document.querySelector(".stat:nth-child(2) .stat-value").textContent = stats.flux.level + " lumen";
+  document.querySelector(".stat:nth-child(2) #underline p").textContent = stats.flux.cost;
+  document.querySelector(".stat:nth-child(3) .stat-value").textContent = stats.illuminance.level + " lux";
+  document.querySelector(".stat:nth-child(3) #underline p").textContent = stats.illuminance.cost;
+  document.querySelector(".stat:nth-child(4) .stat-value").textContent = stats.radiant.level + " watt";
+  document.querySelector(".stat:nth-child(4) #underline p").textContent = stats.radiant.cost;
+}
+
+export function renderEventMarkers() {
+  document.querySelectorAll(".event-marker").forEach((marker) => marker.remove());
+  const zone = zones[state.currentZone];
+  zone.events.forEach((event) => {
+    if (!event.triggered) {
+      const marker = document.createElement("div");
+      marker.className = "event-marker";
+      marker.innerHTML = "★";
+      const percent = (event.position / zone.max_distance) * 100;
+      marker.style.left = `${percent}%`;
+      progressSection.appendChild(marker);
+    }
+  });
+}
+
+export function updateAllUI(speed) {
+  updateStatsUI();
+  updateProgressBar();
+  updateVelocityUI(speed);
+  updateLumensUI();
+  updateTravelText();
+}

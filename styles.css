@@ -150,6 +150,40 @@ h2 {
 #progress-section {
   width: 60%;
   text-align: center;
+  position: relative;
+}
+
+.event-marker {
+  position: absolute;
+  top: -8px;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 20px;
+  text-shadow: 0 0 5px gold;
+  z-index: 10;
+  pointer-events: none; /* Para não interferir com cliques */
+}
+
+/* Estilos para a tela de evento */
+#event-screen {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  gap: 40px;
+}
+
+#event-choices {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 80%;
 }
 
 #progress-container {

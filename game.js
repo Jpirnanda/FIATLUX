@@ -5,12 +5,6 @@ export const stats = {
   radiant: { level: 1, cost: 100 },
 };
 
-export const zonesOLD = {
-  first: { actual_distance: 0, max_distance: 100 },
-  second: { actual_distance: 0, max_distance: 1000 },
-  third: { actual_distance: 0, max_distance: 10000 },
-};
-
 export const zones = {
   first: {
     name: "1D",
@@ -18,10 +12,13 @@ export const zones = {
     max_distance: 100,
     events: [
       {
-        position: 0,
+        position: 50,
         triggered: false,
         text: "Texto de teste.",
-        choices: [{ text: "Resposta 1" }, { text: "Resposta 2" }],
+        choices: [
+          { text: "Ganhar 200 lumens", reward: { lumens: 200 } },
+          { text: "Ignorar", reward: {} },
+        ],
       },
     ],
   },
@@ -36,4 +33,16 @@ export function upgradeStat(statName, lumens) {
     return stat.cost;
   }
   return 0;
+}
+
+const exponenciacao = 1.2;
+
+export function getLumensPerSecond() {
+  // Calcula lumens por segundo baseado no nível de 'intensity'
+  return Math.floor(10 * Math.pow(exponenciacao, stats.intensity.level - 1));
+}
+
+export function getDistancePerSecond() {
+  // A distância percorrida por segundo é igual ao nível de 'flux'
+  return stats.flux.level;
 }
