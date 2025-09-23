@@ -1,10 +1,15 @@
 import { getDistancePerSecond, getLumensPerSecond, zones } from "./game.js";
 import { state, addLumens } from "./state.js";
-import { updateProgressBar, updateLumensUI, showEventScreen, restoreMainScreen, updateAllUI, renderEventMarkers, storeOriginalHTML } from "./ui.js";
-import { attachMainListeners } from "./listeners.js";
+import { updateProgressBar, updateLumensUI, showEventScreen, restoreMainScreen, updateAllUI, renderEventMarkers } from "./ui.js";
+import { initializeListeners, attachCenterPanelListeners } from "./listeners.js";
+import { iconTemplates } from "./templates.js";
 
 export function startEating() {
-  if (state.eatInterval) return;
+  if (state.eatInterval) {
+    addLumens(100);
+    updateLumensUI();
+    return;
+  }
 
   clearInterval(state.flyInterval);
   state.flyInterval = null;
@@ -57,32 +62,56 @@ export function startFlying() {
 }
 
 function triggerEvent(event) {
+  console.log("%c[engine.js] TRIGGERING EVENT", "color: yellow; font-weight: bold;", event);
   clearInterval(state.flyInterval);
   state.flyInterval = null;
+  console.log("[engine.js] Fly interval cleared.");
   showEventScreen(event, resolveEvent);
 }
 
 function resolveEvent(choice) {
+  console.log("%c[engine.js] RESOLVING EVENT with choice:", "color: yellow; font-weight: bold;", choice);
   if (choice.reward && choice.reward.lumens) {
     addLumens(choice.reward.lumens);
   }
 
+  console.log("[engine.js] 1. Restoring main screen...");
   restoreMainScreen();
-  attachMainListeners();
+  console.log("[engine.js] 2. Updating all UI elements...");
   updateAllUI(getDistancePerSecond());
+  console.log("[engine.js] 3. Rendering event markers...");
   renderEventMarkers();
 
   if (state.gameState === "fly") {
+    console.log("[engine.js] 4. Game state is 'fly', restarting flight...");
     startFlying();
   }
+  // Listeners no longer need to be re-initialized because the main screen was not destroyed.
+  console.log("%c[engine.js] Event resolution complete. UI updated.", "color: yellow; font-weight: bold;");
 }
 
 export function initializeGame() {
-  storeOriginalHTML();
-  attachMainListeners();
+  console.log("%c[engine.js] INITIALIZING GAME...", "color: cyan; font-weight: bold;");
+  // Renderiza todos os ícones da página UMA ÚNICA VEZ, ANTES de qualquer outra coisa.
+  // Isso garante que o DOM esteja estável antes de salvarmos o HTML ou adicionarmos listeners.
+  console.log("[engine.js] Initializing Lucide icons...");
+  lucide.createIcons();
+
+  initializeListeners();
+
+  // Guarda o SVG do ícone de evento para ser usado como template.
+  const starTemplate = document.querySelector("#icon-templates svg");
+  if (starTemplate) {
+    console.log("[engine.js] Storing SVG icon template for 'star'.");
+    iconTemplates.star = starTemplate;
+  } else {
+    console.error("[engine.js] Could not find the 'star' icon template to store!");
+  }
+
   updateAllUI(getDistancePerSecond());
   renderEventMarkers();
   if (state.gameState === "fly") {
+    console.log("[engine.js] Initial game state is 'fly', starting flight.");
     startFlying();
   }
 }

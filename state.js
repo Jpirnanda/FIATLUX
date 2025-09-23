@@ -4,13 +4,6 @@ export const state = {
   currentZone: "first",
   eatInterval: null,
   flyInterval: null,
-  _originalCenterHTML: "",
-  get originalCenterHTML() {
-    return this._originalCenterHTML;
-  },
-  set originalCenterHTML(html) {
-    this._originalCenterHTML = html;
-  },
 };
 
 export function addLumens(amount) {
